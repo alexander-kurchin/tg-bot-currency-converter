@@ -4,7 +4,7 @@ import telebot
 from dotenv import load_dotenv
 
 from currencies import CURRENCIES
-from extensions import Converter
+from extensions import APIException, Converter
 
 
 load_dotenv()
@@ -15,7 +15,7 @@ bot = telebot.TeleBot(os.getenv('TOKEN'))
 def command_start(message):
     text = f'Привет, @{message.chat.username}!\n'
     text += 'Я бот-конвертер валют.\n'
-    text += 'Нажми /help, если нужны инструкции.'
+    text += 'Нажмите /help, если нужны инструкции.'
     bot.send_message(message.chat.id, text)
 
 
@@ -48,9 +48,13 @@ def message_scum(message):
 @bot.message_handler()
 def message_main(message):
     try:
-        text = Converter.get_price('Рубь', 'Тугрик', 100)
-    except:
-        text = 'Ошибочка :('
+        values = message.text.strip().split(' ')
+        if len(values) != 3:
+            e = 'Аргументов должно быть 3 (три). Инструкции: /help'
+            raise APIException(e)
+        text = Converter.get_price(*values)
+    except APIException as e:
+        text = e
     finally:
         bot.reply_to(message, text)
 
