@@ -55,6 +55,8 @@ def message_main(message):
         text = Converter.get_price(*values)
     except APIException as e:
         text = e
+    except Exception as e:
+        text = f'Что-то пошло не так:\n\n{e}\n\nПопробуйте зайти позже.'
     finally:
         bot.reply_to(message, text)
 

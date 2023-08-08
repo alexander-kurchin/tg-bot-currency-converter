@@ -15,20 +15,20 @@ class Converter:
         try:
             base_key = CURRENCIES[base.lower()]
         except KeyError:
-            e = f'Ошибка! Валюта {base} не найдена.'
+            e = f'Ошибка! Валюта «{base}» не найдена.'
             raise APIException(e)
         try:
             quote_key = CURRENCIES[quote.lower()]
         except KeyError:
-            e = f'Ошибка! Валюта {quote} не найдена.'
+            e = f'Ошибка! Валюта «{quote}» не найдена.'
             raise APIException(e)
         if base_key == quote_key:
-            e = f'Ошибка! Невозможно перевести одинаковые валюты {base}.'
+            e = f'Ошибка! Невозможно конвертировать одинаковые валюты «{base}».'
             raise APIException(e)
         try:
             base_amount = float(base_amount)
         except ValueError:
-            e = f'Ошибка! Не удалось обработать количество {base_amount}.'
+            e = f'Ошибка! Не удалось обработать количество «{base_amount}».'
             raise APIException(e)
 
         response = requests.get('https://www.cbr-xml-daily.ru/daily_json.js')
