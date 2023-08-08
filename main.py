@@ -4,6 +4,9 @@ import telebot
 from dotenv import load_dotenv
 
 
+from currencies import CURRENCIES
+
+
 load_dotenv()
 bot = telebot.TeleBot(os.getenv('TOKEN'))
 
@@ -24,6 +27,13 @@ def command_help(message):
     text += '<B> — валюта, в которую конвертируем, '
     text += '<C> — количество первой валюты.\n\n'
     text += 'Доступные валюты: /currencies'
+    bot.send_message(message.chat.id, text)
+
+
+@bot.message_handler(commands=['currencies', 'values'])
+def command_currencies(message):
+    text = 'Доступные валюты:\n\n'
+    text += '\n'.join([key for key in CURRENCIES.keys()])
     bot.send_message(message.chat.id, text)
 
 
