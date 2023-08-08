@@ -21,7 +21,7 @@ def command_start(message):
 
 @bot.message_handler(commands=['help'])
 def command_help(message):
-    text = 'Инструкции:\n\n'
+    text = 'Инструкции.\n\n'
     text += 'Необходимо ввести через пробел:\n\n<A> <B> <C>\n\n'
     text += 'Где <A> — валюта, из которой конвертируем, '
     text += '<B> — валюта, в которую конвертируем, '
@@ -50,7 +50,7 @@ def message_main(message):
     try:
         values = message.text.strip().split(' ')
         if len(values) != 3:
-            e = 'Аргументов должно быть 3 (три). Инструкции: /help'
+            e = 'Ошибка! Аргументов должно быть 3 (три). Инструкции: /help'
             raise APIException(e)
         text = Converter.get_price(*values)
     except APIException as e:
