@@ -3,8 +3,8 @@ import os
 import telebot
 from dotenv import load_dotenv
 
-
 from currencies import CURRENCIES
+from extensions import Converter
 
 
 load_dotenv()
@@ -35,6 +35,24 @@ def command_currencies(message):
     text = 'Доступные валюты:\n\n'
     text += '\n'.join([key for key in CURRENCIES.keys()])
     bot.send_message(message.chat.id, text)
+
+
+@bot.message_handler(content_types=['audio', 'contact', 'document',
+                                    'location', 'photo', 'poll', 'sticker',
+                                    'video', 'video_note', 'voice'])
+def message_scum(message):
+    text = 'Это очень интересно.'
+    bot.reply_to(message, text)
+
+
+@bot.message_handler()
+def message_main(message):
+    try:
+        text = Converter.get_price('Рубь', 'Тугрик', 100)
+    except:
+        text = 'Ошибочка :('
+    finally:
+        bot.reply_to(message, text)
 
 
 if __name__ == '__main__':
