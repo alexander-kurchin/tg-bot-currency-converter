@@ -8,11 +8,12 @@ from extensions import APIException, Converter
 
 
 load_dotenv()
-bot = telebot.TeleBot(os.getenv('TOKEN'))
+token = os.getenv('TOKEN')
+bot = telebot.TeleBot(token)
 
 
 @bot.message_handler(commands=['start'])
-def command_start(message):
+def command_start(message: telebot.types.Message) -> None:
     text = f'Привет, @{message.chat.username}!\n'
     text += 'Я бот-конвертер валют.\n'
     text += 'Нажмите /help, если нужны инструкции.'
@@ -20,7 +21,7 @@ def command_start(message):
 
 
 @bot.message_handler(commands=['help'])
-def command_help(message):
+def command_help(message: telebot.types.Message) -> None:
     text = 'Инструкции.\n\n'
     text += 'Необходимо ввести через пробел:\n\n<A> <B> <C>\n\n'
     text += 'Где <A> — валюта, из которой конвертируем, '
@@ -31,7 +32,7 @@ def command_help(message):
 
 
 @bot.message_handler(commands=['currencies', 'values'])
-def command_currencies(message):
+def command_currencies(message: telebot.types.Message) -> None:
     text = 'Доступные валюты:\n\n'
     text += '\n'.join([key for key in CURRENCIES.keys()])
     bot.send_message(message.chat.id, text)
@@ -40,13 +41,13 @@ def command_currencies(message):
 @bot.message_handler(content_types=['audio', 'contact', 'document',
                                     'location', 'photo', 'poll', 'sticker',
                                     'video', 'video_note', 'voice'])
-def message_scum(message):
+def message_scum(message: telebot.types.Message) -> None:
     text = 'Это очень интересно.'
     bot.reply_to(message, text)
 
 
 @bot.message_handler()
-def message_main(message):
+def message_main(message: telebot.types.Message) -> None:
     try:
         values = message.text.strip().split(' ')
         if len(values) != 3:

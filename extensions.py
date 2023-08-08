@@ -9,9 +9,9 @@ class APIException(Exception):
     pass
 
 
-class Converter:
+class Converter():
     @staticmethod
-    def get_price(base, quote, base_amount):
+    def get_price(base: str, quote: str, base_amount: str)  -> str:
         try:
             base_key = CURRENCIES[base.lower()]
         except KeyError:
