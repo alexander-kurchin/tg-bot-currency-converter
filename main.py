@@ -39,10 +39,10 @@ def command_help(message: telebot.types.Message) -> None:
     """
 
     text = 'Инструкции.\n\n'
-    text += 'Необходимо ввести через пробел:\n\n<A> <B> <C>\n\n'
-    text += 'Где <A> — валюта, из которой конвертируем, '
-    text += '<B> — валюта, в которую конвертируем, '
-    text += '<C> — количество первой валюты.\n\n'
+    text += 'Нажимаем команду /convert.\n'
+    text += 'Вводим валюту, из которой конвертируем.\n'
+    text += 'Вводим валюту, в которую конвертируем.\n'
+    text += 'Вводим количество первой валюты.\n\n'
     text += 'Доступные валюты: /currencies'
     bot.send_message(message.chat.id, text)
 
@@ -62,12 +62,56 @@ def command_currencies(message: telebot.types.Message) -> None:
     bot.send_message(message.chat.id, text)
 
 
-@bot.message_handler(content_types=['audio', 'contact', 'document',
+@bot.message_handler(commands=['convert'])
+def command_convert(message: telebot.types.Message) -> None:
+    """
+    Обработчик команды /convert.
+
+    Args:
+        message (telebot.types.Message):
+            объект «Сообщение» из библиотеки pyTelegramBotAPI
+    """
+
+    text = 'Какую валюту конвертируем?'
+    bot.send_message(message.chat.id, text)
+    bot.register_next_step_handler(message, ask_base)
+
+
+def ask_base(message: telebot.types.Message) -> None:
+    base = message.text.strip()
+    text = 'В какую валюту конвертируем?'
+    bot.send_message(message.chat.id, text)
+    bot.register_next_step_handler(message, ask_quote, base)
+
+
+def ask_quote(message: telebot.types.Message, base: str) -> None:
+    quote = message.text.strip()
+    text = 'Сколько конвертируем?'
+    bot.send_message(message.chat.id, text)
+    bot.register_next_step_handler(message, ask_base_amount, base, quote)
+
+
+def ask_base_amount(message: telebot.types.Message,
+                    base: str,
+                    quote: str) -> None:
+    base_amount = message.text.strip()
+
+    try:
+        text = Converter.convert(base, quote, base_amount)
+    except DataValidationException as e:
+        text = e
+    except Exception as e:
+        text = f'Что-то пошло не так:\n\n{e}\n\nПопробуйте зайти позже.'
+    finally:
+        bot.reply_to(message, text)
+
+
+@bot.message_handler(content_types=['text', 'audio', 'contact', 'document',
                                     'location', 'photo', 'poll', 'sticker',
                                     'video', 'video_note', 'voice'])
-def message_scum(message: telebot.types.Message) -> None:
+def any_message_handler(message: telebot.types.Message) -> None:
     """
-    Обработчик мусорных сообщений.
+    Обработчик сообщений.
 
     Args:
         message (telebot.types.Message):
@@ -76,33 +120,6 @@ def message_scum(message: telebot.types.Message) -> None:
 
     text = 'Это очень интересно.'
     bot.reply_to(message, text)
-
-
-@bot.message_handler()
-def message_main(message: telebot.types.Message) -> None:
-    """
-    Обработчик основных сообщений.
-
-    Args:
-        message (telebot.types.Message):
-            объект «Сообщение» из библиотеки pyTelegramBotAPI
-
-    Raises:
-        APIException: ошибка валидации данных
-    """
-
-    try:
-        values = message.text.split()
-        if len(values) != 3:
-            e = 'Ошибка! Аргументов должно быть 3 (три). Инструкции: /help'
-            raise DataValidationException(e)
-        text = Converter.convert(*values)
-    except DataValidationException as e:
-        text = e
-    except Exception as e:
-        text = f'Что-то пошло не так:\n\n{e}\n\nПопробуйте зайти позже.'
-    finally:
-        bot.reply_to(message, text)
 
 
 if __name__ == '__main__':
