@@ -36,3 +36,17 @@ TOKEN="110201543:AAHdqTcvCH1vGWJxfSeofSAs0K5PALDsaw"
 
 # API для курсов ЦБ РФ
 Я использовал сервис [Курсы ЦБ РФ в XML и JSON, API](https://www.cbr-xml-daily.ru/), так как он бесплатный, не требует регистрации, а официальные API ЦБ работают ненадежно (да и json мне приятнее xml :smile:).
+
+# Размещаем код на сервере
+
+![Схема взаимодействия пользователей, сервера tg и бота](https://optima740.github.io/image/post-2020-09-18/how_it_works.png)
+
+Бота можно запусть прямо на своём компьютере, это удобно для тестирования во время разработки. Но готовый код лучше запустить на сервере.
+
+Я использовал бесплатный тариф в облачной платформе [*Python*Anywhere](https://www.pythonanywhere.com/).
+
+Загружаете файлы `main.py extensions.py currencies.py .env requirements.txt` на сервер.
+
+Запускает консоль, и сначала устанавливаете зависимости `pip install -r /home/<ваш_username>/requirements.txt`, а затем запускаете саму программу `python /home/<ваш_username>/main.py`.
+
+Вуаля.
