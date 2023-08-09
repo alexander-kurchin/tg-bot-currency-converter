@@ -92,11 +92,11 @@ def message_main(message: telebot.types.Message) -> None:
     """
 
     try:
-        values = message.text.strip().split(' ')
+        values = message.text.split()
         if len(values) != 3:
             e = 'Ошибка! Аргументов должно быть 3 (три). Инструкции: /help'
             raise DataValidationException(e)
-        text = Converter.get_price(*values)
+        text = Converter.convert(*values)
     except DataValidationException as e:
         text = e
     except Exception as e:

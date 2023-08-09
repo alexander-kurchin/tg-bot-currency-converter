@@ -19,7 +19,7 @@ class Converter():
     """
 
     @staticmethod
-    def get_price(base: str, quote: str, base_amount: str) -> str:
+    def convert(base: str, quote: str, base_amount: str) -> str:
         """
         Конвертирует одну валюту в другую на основе
         курса валют ЦБ РФ на сегодня, полученного
@@ -48,10 +48,10 @@ class Converter():
             e = f'Ошибка! Валюта «{quote}» не найдена.'
             raise DataValidationException(e)
         if base_key == quote_key:
-            e = f'Ошибка! Невозможно конвертировать одинаковые валюты «{base}».'
+            e = 'Ошибка! Невозможно конвертировать одинаковые валюты.'
             raise DataValidationException(e)
         try:
-            base_amount = float(base_amount)
+            base_amount = float(base_amount.replace(',', '.'))
         except ValueError:
             e = f'Ошибка! Не удалось обработать количество «{base_amount}».'
             raise DataValidationException(e)
