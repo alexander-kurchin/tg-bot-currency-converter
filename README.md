@@ -54,6 +54,6 @@ TOKEN="110201543:AAHdqTcvCH1vGWJxfSeofSAs0K5PALDsaw"
 
 Загружаете файлы `main.py extensions.py currencies.py .env requirements.txt` на сервер.
 
-Запускает консоль, и сначала устанавливаете зависимости `pip install -r /home/<ваш_username>/requirements.txt`, а затем запускаете саму программу `python /home/<ваш_username>/main.py`.
+Запускаете консоль, и сначала устанавливаете зависимости `pip install -r /home/<ваш_username>/requirements.txt`, а затем запускаете саму программу `python /home/<ваш_username>/main.py`.
 
 Вуаля.

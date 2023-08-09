@@ -42,14 +42,17 @@ class Converter():
         except KeyError:
             e = f'Ошибка! Валюта «{base}» не найдена.'
             raise DataValidationException(e)
+
         try:
             quote_key = CURRENCIES[quote.lower()]
         except KeyError:
             e = f'Ошибка! Валюта «{quote}» не найдена.'
             raise DataValidationException(e)
+
         if base_key == quote_key:
             e = 'Ошибка! Невозможно конвертировать одинаковые валюты.'
             raise DataValidationException(e)
+
         try:
             base_amount = float(base_amount.replace(',', '.'))
         except ValueError:
