@@ -11,6 +11,11 @@ load_dotenv()
 token = os.getenv('TOKEN')
 bot = telebot.TeleBot(token)
 
+COMMANDS_BUTTONS = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
+COMMANDS_BUTTONS.add('/convert', '/help', '/currencies')
+CURRENCIES_BUTTONS = telebot.types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
+CURRENCIES_BUTTONS.add(*[telebot.types.KeyboardButton(key) for key in CURRENCIES.keys()])
+
 
 @bot.message_handler(commands=['start'])
 def command_start(message: telebot.types.Message) -> None:
@@ -24,8 +29,10 @@ def command_start(message: telebot.types.Message) -> None:
 
     text = f'Привет, @{message.chat.username}!\n'
     text += 'Я бот-конвертер валют.\n'
-    text += 'Нажмите /help, если нужны инструкции.'
-    bot.send_message(message.chat.id, text)
+    text += 'Нажмите /help, если нужны инструкции.\n'
+    text += 'Нажмите /currencies, чтобы увидеть доступные валюты.\n'
+    text += 'Нажмите /convert для конвертации.'
+    bot.send_message(message.chat.id, text, reply_markup=COMMANDS_BUTTONS)
 
 
 @bot.message_handler(commands=['help'])
@@ -40,11 +47,11 @@ def command_help(message: telebot.types.Message) -> None:
 
     text = 'Инструкции.\n\n'
     text += 'Нажимаем команду /convert.\n'
-    text += 'Вводим валюту, из которой конвертируем.\n'
-    text += 'Вводим валюту, в которую конвертируем.\n'
+    text += 'Выбираем валюту, из которой конвертируем.\n'
+    text += 'Выбираем валюту, в которую конвертируем.\n'
     text += 'Вводим количество первой валюты.\n\n'
     text += 'Доступные валюты: /currencies'
-    bot.send_message(message.chat.id, text)
+    bot.send_message(message.chat.id, text, reply_markup=COMMANDS_BUTTONS)
 
 
 @bot.message_handler(commands=['currencies', 'values'])
@@ -59,7 +66,7 @@ def command_currencies(message: telebot.types.Message) -> None:
 
     text = 'Доступные валюты:\n\n'
     text += '\n'.join([key for key in CURRENCIES.keys()])
-    bot.send_message(message.chat.id, text)
+    bot.send_message(message.chat.id, text, reply_markup=COMMANDS_BUTTONS)
 
 
 @bot.message_handler(commands=['convert'])
@@ -73,21 +80,21 @@ def command_convert(message: telebot.types.Message) -> None:
     """
 
     text = 'Какую валюту конвертируем?'
-    bot.send_message(message.chat.id, text)
+    bot.send_message(message.chat.id, text, reply_markup=CURRENCIES_BUTTONS)
     bot.register_next_step_handler(message, ask_base)
 
 
 def ask_base(message: telebot.types.Message) -> None:
     base = message.text.strip()
     text = 'В какую валюту конвертируем?'
-    bot.send_message(message.chat.id, text)
+    bot.send_message(message.chat.id, text, reply_markup=CURRENCIES_BUTTONS)
     bot.register_next_step_handler(message, ask_quote, base)
 
 
 def ask_quote(message: telebot.types.Message, base: str) -> None:
     quote = message.text.strip()
     text = 'Сколько конвертируем?'
-    bot.send_message(message.chat.id, text)
+    bot.send_message(message.chat.id, text, reply_markup=telebot.types.ReplyKeyboardRemove())
     bot.register_next_step_handler(message, ask_base_amount, base, quote)
 
 
@@ -103,7 +110,7 @@ def ask_base_amount(message: telebot.types.Message,
     except Exception as e:
         text = f'Что-то пошло не так:\n\n{e}\n\nПопробуйте зайти позже.'
     finally:
-        bot.reply_to(message, text)
+        bot.reply_to(message, text, reply_markup=COMMANDS_BUTTONS)
 
 
 @bot.message_handler(content_types=['text', 'audio', 'contact', 'document',
@@ -119,7 +126,7 @@ def any_message_handler(message: telebot.types.Message) -> None:
     """
 
     text = 'Это очень интересно.'
-    bot.reply_to(message, text)
+    bot.reply_to(message, text, reply_markup=COMMANDS_BUTTONS)
 
 
 if __name__ == '__main__':
