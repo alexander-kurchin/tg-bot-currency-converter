@@ -217,4 +217,4 @@ def any_message_handler(message: Message) -> None:
 
 
 if __name__ == '__main__':
-    bot.polling(non_stop=True)
+    bot.infinity_polling()
