@@ -1,9 +1,10 @@
 import os
+from typing import Optional
 
 import telebot
 from dotenv import load_dotenv
-from telebot.types import (KeyboardButton, Message,
-                           ReplyKeyboardMarkup, ReplyKeyboardRemove)
+from telebot.types import (KeyboardButton, Message, ReplyKeyboardMarkup,
+                           ReplyKeyboardRemove)
 
 from currencies import CURRENCIES
 from extensions import Converter, DataValidationException
@@ -11,8 +12,6 @@ from extensions import Converter, DataValidationException
 
 COMMANDS_BUTTONS = ReplyKeyboardMarkup(row_width=3, resize_keyboard=True)
 COMMANDS_BUTTONS.add('/convert', '/help', '/currencies')
-# CURRENCIES_BUTTONS = ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
-# CURRENCIES_BUTTONS.add(*[KeyboardButton(key) for key in CURRENCIES.keys()])
 
 
 load_dotenv()
@@ -20,16 +19,30 @@ token = os.getenv('TOKEN')
 bot = telebot.TeleBot(token)
 
 
-def make_smart_keyboard(key=None) -> ReplyKeyboardMarkup:
+def make_smart_keyboard(key: Optional[str] = None) -> ReplyKeyboardMarkup:
+    """
+    Создаёт клавиатуру, состоящую только из доступных валют,
+    а также красиво разбитую на столбцы.
+
+    Args:
+        key (Optional[str], optional): уже выбранная валюта. По умолчанию None.
+
+    Returns:
+        ReplyKeyboardMarkup: объект «Клавиатура» из библиотеки pyTelegramBotAPI
+    """
+
     dictionary = CURRENCIES.copy()
+
     if key:
         dictionary.pop(key.lower())
+
     if not len(dictionary) % 3:
         keyboard = ReplyKeyboardMarkup(row_width=3, resize_keyboard=True)
     elif not len(dictionary) % 2:
         keyboard = ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
     else:
         keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+
     keyboard.add(*[KeyboardButton(key.capitalize()) for key in dictionary.keys()])
     return keyboard
 
