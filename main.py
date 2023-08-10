@@ -11,12 +11,27 @@ from extensions import Converter, DataValidationException
 
 COMMANDS_BUTTONS = ReplyKeyboardMarkup(row_width=3, resize_keyboard=True)
 COMMANDS_BUTTONS.add('/convert', '/help', '/currencies')
-CURRENCIES_BUTTONS = ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
-CURRENCIES_BUTTONS.add(*[KeyboardButton(key) for key in CURRENCIES.keys()])
+# CURRENCIES_BUTTONS = ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
+# CURRENCIES_BUTTONS.add(*[KeyboardButton(key) for key in CURRENCIES.keys()])
+
 
 load_dotenv()
 token = os.getenv('TOKEN')
 bot = telebot.TeleBot(token)
+
+
+def make_smart_keyboard(key=None) -> ReplyKeyboardMarkup:
+    dictionary = CURRENCIES.copy()
+    if key:
+        dictionary.pop(key.lower())
+    if not len(dictionary) % 3:
+        keyboard = ReplyKeyboardMarkup(row_width=3, resize_keyboard=True)
+    elif not len(dictionary) % 2:
+        keyboard = ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
+    else:
+        keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+    keyboard.add(*[KeyboardButton(key.capitalize()) for key in dictionary.keys()])
+    return keyboard
 
 
 @bot.message_handler(commands=['start'])
@@ -85,7 +100,7 @@ def command_convert(message: Message) -> None:
     """
 
     text = 'Какую валюту конвертируем?'
-    reply_markup = CURRENCIES_BUTTONS
+    reply_markup = make_smart_keyboard()
     bot.send_message(message.chat.id, text=text, reply_markup=reply_markup)
     bot.register_next_step_handler(message, ask_base)
 
@@ -103,11 +118,11 @@ def ask_base(message: Message) -> None:
         base = message.text.strip()
     except AttributeError:
         text = 'Давайте будем ответственнее подходить к делу конвертации валют и попробуем ещё раз.'
-        reply_markup = CURRENCIES_BUTTONS
+        reply_markup = make_smart_keyboard()
         bot.register_next_step_handler(message, ask_base)
     else:
         text = 'В какую валюту конвертируем?'
-        reply_markup = CURRENCIES_BUTTONS
+        reply_markup = make_smart_keyboard(key=base)
         bot.register_next_step_handler(message, ask_quote, base)
     finally:
         bot.send_message(message.chat.id, text=text, reply_markup=reply_markup)
@@ -128,7 +143,7 @@ def ask_quote(message: Message, base: str) -> None:
         quote = message.text.strip()
     except AttributeError:
         text = 'Давайте будем ответственнее подходить к делу конвертации валют и попробуем ещё раз.'
-        reply_markup = CURRENCIES_BUTTONS
+        reply_markup = make_smart_keyboard(key=base)
         bot.register_next_step_handler(message, ask_quote, base)
     else:
         text = 'Сколько конвертируем?'
