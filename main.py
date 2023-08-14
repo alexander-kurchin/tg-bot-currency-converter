@@ -3,14 +3,13 @@ from typing import Optional
 
 import telebot
 from dotenv import load_dotenv
-from telebot.types import (KeyboardButton, Message, ReplyKeyboardMarkup,
-                           ReplyKeyboardRemove)
+from telebot.types import (Message, ReplyKeyboardMarkup, ReplyKeyboardRemove)
 
 from currencies import CURRENCIES
 from extensions import Converter, DataValidationException
 
 
-COMMANDS_BUTTONS = ReplyKeyboardMarkup(row_width=3, resize_keyboard=True)
+COMMANDS_BUTTONS = ReplyKeyboardMarkup(resize_keyboard=True)
 COMMANDS_BUTTONS.add('/convert', '/help', '/currencies')
 
 
@@ -33,17 +32,17 @@ def make_smart_keyboard(key: Optional[str] = None) -> ReplyKeyboardMarkup:
 
     dictionary = CURRENCIES.copy()
 
-    if key:
+    if key and dictionary.get(key.lower()):
         dictionary.pop(key.lower())
 
     if not len(dictionary) % 3:
-        keyboard = ReplyKeyboardMarkup(row_width=3, resize_keyboard=True)
+        keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
     elif not len(dictionary) % 2:
         keyboard = ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
     else:
         keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
 
-    keyboard.add(*[KeyboardButton(key.capitalize()) for key in dictionary.keys()])
+    keyboard.add(*[key.capitalize() for key in dictionary.keys()])
     return keyboard
 
 
