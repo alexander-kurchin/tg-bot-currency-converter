@@ -7,7 +7,7 @@
 
 1. [Как создать бота?](#Как-создать-бота)
 1. [Добавляем токен в .env](#Добавляем-токен-в-env)
-1. [API для курсов ЦБ РФ](#API-для-курсов-ЦБ-РФ)
+1. [API для конвертации валют](#API-для-конвертации-валют)
 1. [Размещаем код на сервере](#Размещаем-код-на-сервере)
 
 ## Как создать бота?
@@ -41,14 +41,39 @@ TOKEN="Токен, полученный при регистрации"
 TOKEN="110201543:AAHdqTcvCH1vGWJxfSeofSAs0K5PALDsaw"
 ```
 
-## API для курсов ЦБ РФ
-Я использовал сервис [Курсы ЦБ РФ в XML и JSON, API](https://www.cbr-xml-daily.ru/), так как он бесплатный, не требует регистрации, а официальные API ЦБ работают ненадежно (да и json мне приятнее xml :smile:).
+## API для конвертации валют
+Я использовал сервис [Exchange rates API](https://exchangerate.host/), так как он бесплатный и не требует регистрации.
+
+Использование:
+
+1. в ответ на запрос `https://api.exchangerate.host/convert?from=RUB&to=EUR&amount=1`
+2. получаем json
+
+``` json
+{
+  "motd": {"msg": "If you or your company use this project or like what we doing, please consider backing us so we can continue maintaining and evolving this project.",
+           "url": "https://exchangerate.host/#/donate"
+           },
+  "success": true,
+  "query": {"from": "RUB",
+            "to": "EUR",
+            "amount": 1
+            },
+  "info": {"rate": 0.009172
+           },
+  "historical": false,
+  "date": "2023-08-14",
+  "result": 0.009172
+}
+```
+
+3. из которого нам нужно значение *"result"*
 
 ## Размещаем код на сервере
 
 ![Схема взаимодействия пользователей, сервера tg и бота](https://optima740.github.io/image/post-2020-09-18/how_it_works.png)
 
-Бота можно запусть прямо на своём компьютере, это удобно для тестирования во время разработки. Но готовый код лучше запустить на сервере.
+Бота можно запустить прямо на своём компьютере, это удобно для тестирования во время разработки. Но готовый код лучше запустить на сервере.
 
 Я использовал бесплатный тариф в облачной платформе [*Python*Anywhere](https://www.pythonanywhere.com/).
 
